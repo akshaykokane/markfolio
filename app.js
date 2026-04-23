@@ -158,6 +158,10 @@ function renderPreview() {
   preview.innerHTML = marked.parse(text);
   updateWordCount();
   saveNotes();
+
+  // Scroll preview to match cursor position in editor
+  const editorScrollRatio = editor.scrollTop / (editor.scrollHeight - editor.clientHeight || 1);
+  preview.scrollTop = editorScrollRatio * (preview.scrollHeight - preview.clientHeight);
 }
 
 function updateWordCount() {
