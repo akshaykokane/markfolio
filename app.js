@@ -34,7 +34,7 @@ function saveNotes() {
 function loadNotes() {
   const saved = localStorage.getItem('markfolio_notes');
   if (saved) {
-    try { notes = JSON.parse(saved); } catch { notes = []; }
+    try { notes = JSON.parse(saved); } catch (e) { notes = []; }
   }
 
   // Migrate single-note format from the old storage keys
@@ -269,6 +269,8 @@ function setStatus(msg) {
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
+
+document.getElementById('newNoteBtn').addEventListener('click', newNote);
 
 loadNotes();
 loadCurrentNote();
