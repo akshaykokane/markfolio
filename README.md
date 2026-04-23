@@ -2,7 +2,7 @@
 
 A minimal, browser-based markdown editor with image paste support and GitHub-ready export.
 
-**[Try it live →](https://akshaykokane.github.io/notion-local)**
+**[Try it live →](https://akshaykokane.github.io/markfolio)**
 
 ## Features
 
