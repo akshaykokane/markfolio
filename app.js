@@ -98,13 +98,15 @@ function newNote() {
   editor.focus();
 }
 
-function selectNote(id) {
+async function selectNote(id) {
   if (id === currentNoteId) return;
   saveNotes();
   currentNoteId = id;
   images = {};
   imageCounter = 0;
   loadCurrentNote();
+  images = await loadImages(currentNoteId);
+  imageCounter = Object.keys(images).length;
   renderPreview();
   renderSidebar();
   editor.focus();
@@ -129,13 +131,18 @@ function deleteNote(id, e) {
 
   const idx = notes.findIndex(n => n.id === id);
   notes.splice(idx, 1);
+  deleteNoteImages(id);
 
   if (currentNoteId === id) {
     currentNoteId = notes[Math.min(idx, notes.length - 1)].id;
     images = {};
     imageCounter = 0;
     loadCurrentNote();
-    renderPreview();
+    loadImages(currentNoteId).then(imgs => {
+      images = imgs;
+      imageCounter = Object.keys(imgs).length;
+      renderPreview();
+    });
   }
 
   saveNotes();
@@ -198,6 +205,7 @@ function insertImage(blob, mimeType) {
   imageCounter++;
   const filename = `image-${imageCounter}.${ext}`;
   images[filename] = blob;
+  saveImage(currentNoteId, filename, blob);
 
   const pos    = editor.selectionStart;
   const before = editor.value.slice(0, pos);
@@ -278,5 +286,9 @@ document.getElementById('newNoteBtn').addEventListener('click', newNote);
 
 loadNotes();
 loadCurrentNote();
-renderPreview();
 renderSidebar();
+loadImages(currentNoteId).then(imgs => {
+  images = imgs;
+  imageCounter = Object.keys(imgs).length;
+  renderPreview();
+});

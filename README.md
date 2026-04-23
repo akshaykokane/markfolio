@@ -8,14 +8,14 @@ A minimal, browser-based markdown editor with image paste support and GitHub-rea
 
 - Write markdown with live preview
 - Paste or drag & drop images directly into the editor
-- Auto-saves title and content to localStorage — survives page refresh
+- Auto-saves notes (text + images) — survives page refresh and note switching
 - Tab key indents instead of jumping out of the editor
 - Live word and character count
 - Export as a `.zip` with your `.md` file and images — ready to push to GitHub
 
 ## Usage
 
-Open `index.html` in your browser, or visit the GitHub Pages link above. No install, no server, no build step.
+Visit [akshaykokane.github.io/markfolio](https://akshaykokane.github.io/markfolio/index.html) or open `index.html` in your browser. No install, no server, no build step.
 
 ## Export structure
 
@@ -32,7 +32,8 @@ Image references in the markdown resolve correctly after unzipping.
 
 ## Notes
 
-- Text is auto-saved to localStorage, but pasted images are memory-only — export before closing to keep images.
+- Note text is saved to `localStorage`; images are saved to `IndexedDB` — both persist across refreshes.
+- Images are stored per note and cleaned up automatically when a note is deleted.
 
 ## License
 

@@ -290,9 +290,9 @@
     <p>Drag an image file from your file system and drop it onto the editor area. It will be inserted at the cursor position.</p>
   </div>
 
-  <div class="warning-box">
-    <div class="warning-title">⚠ Known Issue: Images are lost on refresh</div>
-    <p>Pasted and dropped images are stored <strong>in memory only</strong> and are <strong>not</strong> persisted to <code>localStorage</code>. Refreshing the page or switching notes will cause all images to disappear from the preview — the markdown text remains, but the images will show as broken. <strong>Export your note before refreshing</strong> if it contains images.</p>
+  <div class="card">
+    <h3>Images persist across refreshes</h3>
+    <p>Images are saved to <strong>IndexedDB</strong> in your browser, keyed per note. They are restored automatically when you reload the page or switch back to a note. Deleting a note also removes its images from IndexedDB.</p>
   </div>
 
   <h2>Exporting</h2>
@@ -310,7 +310,7 @@
   <h2>Data &amp; Privacy</h2>
 
   <div class="card">
-    <p>All note text is stored in your browser's <code>localStorage</code> under the key <code>markfolio_notes</code>. Nothing is sent to any server. Clearing browser storage will erase your notes, so export important work regularly.</p>
+    <p>Note text is stored in <code>localStorage</code> under <code>markfolio_notes</code>. Images are stored in <code>IndexedDB</code> under the database <code>markfolio_images</code>. Nothing is sent to any server. Clearing browser storage or site data will erase both notes and images, so export important work regularly.</p>
   </div>
 
 </div>
