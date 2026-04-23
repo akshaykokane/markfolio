@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notion Local</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f7f7f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+  }
+
+  .title-input {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #37352f;
+  }
+  .title-input::placeholder { color: #ccc; }
+
+  .export-btn {
+    padding: 8px 18px;
+    background: #2eaadc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .export-btn:hover { background: #1a90c0; }
+
+  .main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .editor-pane,
+  .preview-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .editor-pane { border-right: 1px solid #e0e0e0; }
+
+  .pane-label {
+    padding: 6px 16px;
+    font-size: 11px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+  }
+
+  textarea {
+    flex: 1;
+    width: 100%;
+    padding: 24px;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    border: none;
+    outline: none;
+    resize: none;
+    background: white;
+    color: #37352f;
+  }
+
+  .preview-content {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-y: auto;
+    background: white;
+    color: #37352f;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+
+  /* Markdown preview styles */
+  .preview-content h1 { font-size: 2em; margin: 0 0 16px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+  .preview-content h2 { font-size: 1.5em; margin: 24px 0 10px; }
+  .preview-content h3 { font-size: 1.2em; margin: 18px 0 8px; }
+  .preview-content p { margin-bottom: 14px; }
+  .preview-content img { max-width: 100%; border-radius: 6px; margin: 8px 0; display: block; }
+  .preview-content code { background: #f0f0ee; padding: 2px 6px; border-radius: 3px; font-family: 'Monaco', monospace; font-size: 13px; }
+  .preview-content pre { background: #f0f0ee; padding: 16px; border-radius: 6px; overflow-x: auto; margin-bottom: 14px; }
+  .preview-content pre code { background: none; padding: 0; }
+  .preview-content blockquote { border-left: 4px solid #ddd; padding-left: 16px; color: #777; margin: 12px 0; }
+  .preview-content ul, .preview-content ol { padding-left: 24px; margin-bottom: 14px; }
+  .preview-content li { margin-bottom: 4px; }
+  .preview-content a { color: #2eaadc; text-decoration: none; }
+  .preview-content a:hover { text-decoration: underline; }
+  .preview-content hr { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+  .preview-content table { border-collapse: collapse; width: 100%; margin-bottom: 14px; }
+  .preview-content th, .preview-content td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  .preview-content th { background: #f7f7f5; }
+
+  .status {
+    padding: 5px 20px;
+    font-size: 12px;
+    color: #999;
+    background: white;
+    border-top: 1px solid #eee;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <input class="title-input" type="text" placeholder="Untitled" id="title" value="Untitled" />
+  <button class="export-btn" onclick="exportZip()">⬇ Export</button>
+</div>
+
+<div class="main">
+  <div class="editor-pane">
+    <div class="pane-label">Markdown</div>
+    <textarea id="editor" placeholder="Start writing...&#10;&#10;Paste images with Ctrl+V / Cmd+V&#10;Use markdown for formatting: **bold**, _italic_, ## headings"></textarea>
+  </div>
+  <div class="preview-pane">
+    <div class="pane-label">Preview</div>
+    <div class="preview-content" id="preview"></div>
+  </div>
+</div>
+
+<div class="status" id="status">Ready — paste images directly into the editor</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+const editor  = document.getElementById('editor');
+const preview = document.getElementById('preview');
+const status  = document.getElementById('status');
+
+// In-memory image store: filename -> Blob
+const images = {};
+let imageCounter = 0;
+
+// --- Render ---
+function renderPreview() {
+  let text = editor.value;
+
+  // Swap asset paths with object URLs so the preview shows actual images
+  text = text.replace(/!\[([^\]]*)\]\(assets\/images\/([^)]+)\)/g, (_, alt, filename) => {
+    if (images[filename]) {
+      return `![${alt}](${URL.createObjectURL(images[filename])})`;
+    }
+    return `![${alt}](assets/images/${filename})`;
+  });
+
+  preview.innerHTML = marked.parse(text);
+}
+
+editor.addEventListener('input', renderPreview);
+
+// --- Paste handler ---
+editor.addEventListener('paste', (e) => {
+  const items = Array.from(e.clipboardData?.items || []);
+  const imageItem = items.find(i => i.type.startsWith('image/'));
+  if (!imageItem) return;
+
+  e.preventDefault();
+
+  const blob = imageItem.getAsFile();
+  const ext  = imageItem.type.split('/')[1]?.replace('jpeg', 'jpg') || 'png';
+  imageCounter++;
+  const filename = `image-${imageCounter}.${ext}`;
+  images[filename] = blob;
+
+  // Insert markdown at cursor position
+  const pos    = editor.selectionStart;
+  const before = editor.value.slice(0, pos);
+  const after  = editor.value.slice(editor.selectionEnd);
+  const md     = `![${filename}](assets/images/${filename})`;
+
+  editor.value = before + md + after;
+  editor.selectionStart = editor.selectionEnd = pos + md.length;
+
+  renderPreview();
+  setStatus(`Image added: ${filename}`);
+});
+
+// --- Export ---
+async function exportZip() {
+  const title = document.getElementById('title').value.trim() || 'Untitled';
+  const zip   = new JSZip();
+
+  zip.file(`${title}.md`, editor.value);
+
+  const imgFolder = zip.folder('assets/images');
+  for (const [filename, blob] of Object.entries(images)) {
+    imgFolder.file(filename, await blob.arrayBuffer());
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `${title}.zip`;
+  a.click();
+
+  setStatus(`Exported: ${title}.zip`);
+}
+
+function setStatus(msg) {
+  status.textContent = msg;
+}
+
+// Init
+renderPreview();
+</script>
+</body>
+</html>
