@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-A single-file, zero-dependency (no build step) Notion-like markdown editor that runs directly in the browser. The entire app lives in `index.html`.
+A single-file, zero-dependency (no build step) markdown editor that runs directly in the browser. The entire app lives in `index.html`. Hosted as a GitHub Pages site.
 
 ## Running
 
