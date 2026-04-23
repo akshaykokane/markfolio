@@ -157,6 +157,29 @@
     vertical-align: middle;
   }
 
+  .warning-box {
+    background: #fff5f5;
+    border: 2px solid #e53e3e;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .warning-box .warning-title {
+    color: #e53e3e;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .warning-box p {
+    color: #c53030;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
   footer {
     text-align: center;
     font-size: 13px;
@@ -267,9 +290,9 @@
     <p>Drag an image file from your file system and drop it onto the editor area. It will be inserted at the cursor position.</p>
   </div>
 
-  <div class="card">
-    <h3>Important: images are session-only</h3>
-    <p>Pasted and dropped images live only in memory. They are <strong>not</strong> saved to <code>localStorage</code>. If you refresh the page or switch notes, the image references remain in the text but the images will not display — export the note before refreshing if your images matter.</p>
+  <div class="warning-box">
+    <div class="warning-title">⚠ Known Issue: Images are lost on refresh</div>
+    <p>Pasted and dropped images are stored <strong>in memory only</strong> and are <strong>not</strong> persisted to <code>localStorage</code>. Refreshing the page or switching notes will cause all images to disappear from the preview — the markdown text remains, but the images will show as broken. <strong>Export your note before refreshing</strong> if it contains images.</p>
   </div>
 
   <h2>Exporting</h2>
