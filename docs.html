@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markfolio — Docs</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f7f7f5;
+    color: #37352f;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+  }
+
+  .toolbar a.brand {
+    font-size: 18px;
+    font-weight: 600;
+    color: #37352f;
+    text-decoration: none;
+  }
+
+  .toolbar-spacer { flex: 1; }
+
+  .toolbar a.nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2eaadc;
+    text-decoration: none;
+    padding: 8px 18px;
+    border: 1.5px solid #2eaadc;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .toolbar a.nav-link:hover {
+    background: #2eaadc;
+    color: white;
+  }
+
+  .content {
+    max-width: 780px;
+    margin: 48px auto;
+    padding: 0 24px 64px;
+    width: 100%;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+  .hero h1 {
+    font-size: 2.4em;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 1.1em;
+    color: #777;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  h2 {
+    font-size: 1.35em;
+    font-weight: 700;
+    margin: 40px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eee;
+  }
+
+  h3 {
+    font-size: 1.05em;
+    font-weight: 600;
+    margin: 22px 0 8px;
+    color: #37352f;
+  }
+
+  p {
+    margin-bottom: 12px;
+    line-height: 1.75;
+    color: #4a4a47;
+  }
+
+  ul, ol {
+    padding-left: 22px;
+    margin-bottom: 14px;
+  }
+  li {
+    margin-bottom: 6px;
+    line-height: 1.7;
+    color: #4a4a47;
+  }
+
+  code {
+    background: #f0f0ee;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 13px;
+    color: #37352f;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid #e8e8e5;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+  }
+
+  .card h3 { margin-top: 0; }
+
+  .shortcut-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+  }
+  .shortcut-table th, .shortcut-table td {
+    text-align: left;
+    padding: 9px 14px;
+    border: 1px solid #e8e8e5;
+    font-size: 14px;
+  }
+  .shortcut-table th {
+    background: #f7f7f5;
+    font-weight: 600;
+    color: #37352f;
+  }
+  .shortcut-table td:first-child {
+    white-space: nowrap;
+    width: 180px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: #e8f4fc;
+    color: #2eaadc;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: #bbb;
+    padding: 24px;
+    border-top: 1px solid #eee;
+    background: white;
+    margin-top: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a class="brand" href="index.html">Markfolio</a>
+  <div class="toolbar-spacer"></div>
+  <a class="nav-link" href="index.html">Open Editor</a>
+</div>
+
+<div class="content">
+
+  <div class="hero">
+    <h1>Markfolio Docs</h1>
+    <p>A fast, zero-install markdown editor that runs entirely in your browser. No accounts, no servers — just write.</p>
+  </div>
+
+  <h2>Getting Started</h2>
+
+  <div class="card">
+    <h3>Open the editor</h3>
+    <p>Simply open <code>index.html</code> in any modern browser — no build step or server needed. Your notes are saved automatically to <code>localStorage</code> and persist across sessions.</p>
+    <pre style="background:#f0f0ee;padding:14px 16px;border-radius:6px;font-size:13px;overflow-x:auto;">open index.html</pre>
+  </div>
+
+  <h2>Interface Overview</h2>
+
+  <div class="card">
+    <h3>Three-pane layout</h3>
+    <ul>
+      <li><strong>Sidebar (left)</strong> — list of all your notes. Click a note to switch to it.</li>
+      <li><strong>Editor (center)</strong> — write raw Markdown here.</li>
+      <li><strong>Preview (right)</strong> — live-rendered HTML output, updated as you type.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Toolbar</h3>
+    <ul>
+      <li><strong>Title field</strong> — the note title. Used as the filename when exporting.</li>
+      <li><strong>Export button</strong> — downloads the current note as a <code>.zip</code> containing the <code>.md</code> file and any pasted images.</li>
+      <li><strong>Docs button</strong> — opens this page.</li>
+    </ul>
+  </div>
+
+  <h2>Managing Notes</h2>
+
+  <div class="card">
+    <h3>Create a note</h3>
+    <p>Click the <code>+</code> button in the sidebar header to create a new blank note.</p>
+  </div>
+
+  <div class="card">
+    <h3>Switch notes</h3>
+    <p>Click any note in the sidebar. The current note is saved automatically before switching.</p>
+  </div>
+
+  <div class="card">
+    <h3>Delete a note</h3>
+    <p>Hover over a note in the sidebar to reveal the <code>×</code> delete button. If only one note exists, deleting it clears its content rather than removing it — there is always at least one note.</p>
+  </div>
+
+  <h2>Writing Markdown</h2>
+
+  <div class="card">
+    <h3>Supported syntax</h3>
+    <table class="shortcut-table">
+      <thead>
+        <tr><th>Syntax</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code># Heading 1</code></td><td>Large heading</td></tr>
+        <tr><td><code>## Heading 2</code></td><td>Medium heading</td></tr>
+        <tr><td><code>**bold**</code></td><td><strong>bold</strong></td></tr>
+        <tr><td><code>_italic_</code></td><td><em>italic</em></td></tr>
+        <tr><td><code>`code`</code></td><td>Inline code</td></tr>
+        <tr><td><code>```</code> block <code>```</code></td><td>Fenced code block</td></tr>
+        <tr><td><code>- item</code></td><td>Unordered list</td></tr>
+        <tr><td><code>1. item</code></td><td>Ordered list</td></tr>
+        <tr><td><code>[text](url)</code></td><td>Hyperlink</td></tr>
+        <tr><td><code>![alt](url)</code></td><td>Image</td></tr>
+        <tr><td><code>&gt; quote</code></td><td>Blockquote</td></tr>
+        <tr><td><code>---</code></td><td>Horizontal rule</td></tr>
+        <tr><td><code>| col | col |</code></td><td>Table</td></tr>
+      </tbody>
+    </table>
+    <p>Rendering is powered by <a href="https://marked.js.org" style="color:#2eaadc;">marked.js v9</a>.</p>
+  </div>
+
+  <h2>Images</h2>
+
+  <div class="card">
+    <h3>Paste an image</h3>
+    <p>Copy an image to your clipboard, click inside the editor, and press <code>Ctrl+V</code> / <code>Cmd+V</code>. The image is stored in memory and inserted as a markdown image tag automatically.</p>
+  </div>
+
+  <div class="card">
+    <h3>Drag and drop</h3>
+    <p>Drag an image file from your file system and drop it onto the editor area. It will be inserted at the cursor position.</p>
+  </div>
+
+  <div class="card">
+    <h3>Important: images are session-only</h3>
+    <p>Pasted and dropped images live only in memory. They are <strong>not</strong> saved to <code>localStorage</code>. If you refresh the page or switch notes, the image references remain in the text but the images will not display — export the note before refreshing if your images matter.</p>
+  </div>
+
+  <h2>Exporting</h2>
+
+  <div class="card">
+    <h3>Export as ZIP</h3>
+    <p>Click <strong>⬇ Export</strong> in the toolbar. A <code>.zip</code> file is downloaded containing:</p>
+    <ul>
+      <li><code>{title}.md</code> — the markdown source at the root</li>
+      <li><code>assets/images/</code> — all pasted images from the current session</li>
+    </ul>
+    <p>The structure is ready to commit directly to a GitHub Pages or other static site repository.</p>
+  </div>
+
+  <h2>Data &amp; Privacy</h2>
+
+  <div class="card">
+    <p>All note text is stored in your browser's <code>localStorage</code> under the key <code>markfolio_notes</code>. Nothing is sent to any server. Clearing browser storage will erase your notes, so export important work regularly.</p>
+  </div>
+
+</div>
+
+<footer>
+  Markfolio — open source markdown editor &nbsp;·&nbsp; <a href="index.html" style="color:#2eaadc;">Back to editor</a>
+</footer>
+
+</body>
+</html>

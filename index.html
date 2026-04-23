@@ -49,6 +49,18 @@
   }
   .export-btn:hover { background: #1a90c0; }
 
+  .docs-link {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2eaadc;
+    text-decoration: none;
+    border: 1.5px solid #2eaadc;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .docs-link:hover { background: #2eaadc; color: white; }
+
   .main {
     flex: 1;
     display: flex;
@@ -221,6 +233,7 @@
 <div class="toolbar">
   <input class="title-input" type="text" placeholder="Untitled" id="title" value="Untitled" />
   <button class="export-btn" onclick="exportZip()">⬇ Export</button>
+  <a class="docs-link" href="docs.html">Docs</a>
 </div>
 
 <div class="main">
