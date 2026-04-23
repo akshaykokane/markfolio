@@ -2,12 +2,15 @@
 
 A minimal, browser-based markdown editor with image paste support and GitHub-ready export.
 
-**[Try it live →](https://akshaykokane.github.io/markfolio)**
+**[Try it live →](https://akshaykokane.github.io/notion-local)**
 
 ## Features
 
 - Write markdown with live preview
-- Paste images (`Cmd+V` / `Ctrl+V`) directly into the editor
+- Paste or drag & drop images directly into the editor
+- Auto-saves title and content to localStorage — survives page refresh
+- Tab key indents instead of jumping out of the editor
+- Live word and character count
 - Export as a `.zip` with your `.md` file and images — ready to push to GitHub
 
 ## Usage
@@ -29,7 +32,7 @@ Image references in the markdown resolve correctly after unzipping.
 
 ## Notes
 
-- Content is not persisted — refreshing clears everything. Export before closing.
+- Text is auto-saved to localStorage, but pasted images are memory-only — export before closing to keep images.
 
 ## License
 
