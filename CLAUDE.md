@@ -24,23 +24,26 @@ open index.html
 
 `index.html` has two sections:
 
-- **CSS** — full-height flexbox column: toolbar → split main area (editor + preview) → status bar
-- **HTML** — two-pane layout: raw markdown textarea on the left, rendered preview `div` on the right
+- **CSS** — full-height flexbox column: toolbar → split main area (sidebar + editor + preview) → status bar
+- **HTML** — three-pane layout: sidebar note list on the left, raw markdown textarea in the middle, rendered preview `div` on the right
 
 All logic lives in `app.js`:
 
 ### Key data flow
 
-1. **Persistence** — title and content auto-save to `localStorage` on every keystroke (`markfolio_title`, `markfolio_content`) and are restored on load. Images are not persisted (memory only).
+1. **Multi-note persistence** — all notes are stored as a JSON array in `localStorage` under `markfolio_notes`. The active note ID is stored under `markfolio_current`. On load, if the old single-note keys (`markfolio_title`, `markfolio_content`) exist and there are no notes yet, they are migrated into a new note automatically.
 
-2. **Image insertion** (`insertImage`) — shared helper used by both paste and drag & drop. Stores the `Blob` in the in-memory `images` object (`filename → Blob`) and inserts `![name](assets/images/name.png)` at the cursor.
+2. **Note switching** (`selectNote`, `newNote`, `deleteNote`) — switching notes calls `saveNotes()` first, then updates `currentNoteId`, resets the in-memory `images` object and `imageCounter` to zero, loads the new note's text, and re-renders preview and sidebar.
 
-3. **Preview rendering** (`renderPreview`) — before passing text to `marked.parse()`, replaces `assets/images/…` paths with temporary `URL.createObjectURL(blob)` URLs so pasted images display without writing to disk. Also updates word/char count and triggers save.
+3. **Image insertion** (`insertImage`) — shared helper used by both paste and drag & drop. Stores the `Blob` in the in-memory `images` object (`filename → Blob`) and inserts `![name](assets/images/name.png)` at the cursor. Images belong to the current editing session only.
 
-4. **Export** (`exportZip`) — iterates `images`, adds each blob to `assets/images/` in a JSZip instance alongside the markdown as `{title}.md`, then triggers a browser download of the `.zip`.
+4. **Preview rendering** (`renderPreview`) — before passing text to `marked.parse()`, replaces `assets/images/…` paths with temporary `URL.createObjectURL(blob)` URLs so pasted images display without writing to disk. Also updates word/char count and calls `saveNotes()`.
+
+5. **Export** (`exportZip`) — iterates `images`, adds each blob to `assets/images/` in a JSZip instance alongside the markdown as `{title}.md`, then triggers a browser download of the `.zip`.
 
 ### Constraints to keep in mind
 
-- Images exist only in the in-memory `images` object — refreshing loses all images even though text is restored from localStorage.
-- Image filenames are sequential (`image-1.png`, `image-2.png`, …); no deduplication.
+- Images exist only in the in-memory `images` object and are reset when switching notes or refreshing — text is restored from localStorage but images are not.
+- Image filenames are sequential per session (`image-1.png`, `image-2.png`, …); no deduplication.
 - The exported zip is intentionally flat: `{title}.md` at root, images under `assets/images/`, ready to push to GitHub as-is.
+- Deleting the last remaining note clears it instead of removing it (always at least one note exists).

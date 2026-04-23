@@ -4,26 +4,143 @@ const statusMsg  = document.getElementById('statusMsg');
 const wordCount  = document.getElementById('wordCount');
 const editorPane = document.getElementById('editorPane');
 const titleInput = document.getElementById('title');
+const noteList   = document.getElementById('noteList');
 
-// In-memory image store: filename -> Blob
-const images = {};
+// In-memory image store for the current note: filename -> Blob
+let images = {};
 let imageCounter = 0;
+
+// ─── Notes data model ────────────────────────────────────────────────────────
+
+let notes = [];          // [{id, title, content}]
+let currentNoteId = null;
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
 
 // ─── Persistence ────────────────────────────────────────────────────────────
 
-function save() {
-  localStorage.setItem('markfolio_title',   titleInput.value);
-  localStorage.setItem('markfolio_content', editor.value);
+function saveNotes() {
+  const note = notes.find(n => n.id === currentNoteId);
+  if (note) {
+    note.title   = titleInput.value;
+    note.content = editor.value;
+  }
+  localStorage.setItem('markfolio_notes',   JSON.stringify(notes));
+  localStorage.setItem('markfolio_current', currentNoteId);
 }
 
-function load() {
-  const savedTitle   = localStorage.getItem('markfolio_title');
-  const savedContent = localStorage.getItem('markfolio_content');
-  if (savedTitle)   titleInput.value = savedTitle;
-  if (savedContent) editor.value     = savedContent;
+function loadNotes() {
+  const saved = localStorage.getItem('markfolio_notes');
+  if (saved) {
+    try { notes = JSON.parse(saved); } catch { notes = []; }
+  }
+
+  // Migrate single-note format from the old storage keys
+  if (notes.length === 0) {
+    const oldTitle   = localStorage.getItem('markfolio_title')   || 'Untitled';
+    const oldContent = localStorage.getItem('markfolio_content') || '';
+    notes.push({ id: generateId(), title: oldTitle, content: oldContent });
+  }
+
+  const savedCurrent = localStorage.getItem('markfolio_current');
+  currentNoteId = (savedCurrent && notes.find(n => n.id === savedCurrent))
+    ? savedCurrent
+    : notes[0].id;
 }
 
-titleInput.addEventListener('input', save);
+function loadCurrentNote() {
+  const note = notes.find(n => n.id === currentNoteId);
+  if (!note) return;
+  titleInput.value = note.title;
+  editor.value     = note.content;
+}
+
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+
+function renderSidebar() {
+  noteList.innerHTML = '';
+  notes.forEach(note => {
+    const item = document.createElement('div');
+    item.className = 'note-item' + (note.id === currentNoteId ? ' active' : '');
+    item.onclick = () => selectNote(note.id);
+
+    const titleEl = document.createElement('span');
+    titleEl.className   = 'note-item-title';
+    titleEl.textContent = note.title.trim() || 'Untitled';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className   = 'delete-note-btn';
+    deleteBtn.textContent = '×';
+    deleteBtn.title       = 'Delete note';
+    deleteBtn.onclick = (e) => deleteNote(note.id, e);
+
+    item.appendChild(titleEl);
+    item.appendChild(deleteBtn);
+    noteList.appendChild(item);
+  });
+}
+
+// ─── Note CRUD ───────────────────────────────────────────────────────────────
+
+function newNote() {
+  saveNotes();
+  const note = { id: generateId(), title: 'Untitled', content: '' };
+  notes.unshift(note);
+  currentNoteId = note.id;
+  images = {};
+  imageCounter = 0;
+  titleInput.value = note.title;
+  editor.value     = note.content;
+  renderPreview();
+  renderSidebar();
+  editor.focus();
+}
+
+function selectNote(id) {
+  if (id === currentNoteId) return;
+  saveNotes();
+  currentNoteId = id;
+  images = {};
+  imageCounter = 0;
+  loadCurrentNote();
+  renderPreview();
+  renderSidebar();
+  editor.focus();
+}
+
+function deleteNote(id, e) {
+  e.stopPropagation();
+
+  if (notes.length === 1) {
+    // Clear the only note instead of deleting it
+    notes[0].title   = 'Untitled';
+    notes[0].content = '';
+    titleInput.value = 'Untitled';
+    editor.value     = '';
+    images = {};
+    imageCounter = 0;
+    renderPreview();
+    renderSidebar();
+    saveNotes();
+    return;
+  }
+
+  const idx = notes.findIndex(n => n.id === id);
+  notes.splice(idx, 1);
+
+  if (currentNoteId === id) {
+    currentNoteId = notes[Math.min(idx, notes.length - 1)].id;
+    images = {};
+    imageCounter = 0;
+    loadCurrentNote();
+    renderPreview();
+  }
+
+  saveNotes();
+  renderSidebar();
+}
 
 // ─── Render ──────────────────────────────────────────────────────────────────
 
@@ -40,7 +157,7 @@ function renderPreview() {
 
   preview.innerHTML = marked.parse(text);
   updateWordCount();
-  save();
+  saveNotes();
 }
 
 function updateWordCount() {
@@ -51,6 +168,11 @@ function updateWordCount() {
 }
 
 editor.addEventListener('input', renderPreview);
+
+titleInput.addEventListener('input', () => {
+  saveNotes();
+  renderSidebar();
+});
 
 // ─── Tab key → indent ────────────────────────────────────────────────────────
 
@@ -148,5 +270,7 @@ function setStatus(msg) {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
-load();
+loadNotes();
+loadCurrentNote();
 renderPreview();
+renderSidebar();

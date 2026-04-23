@@ -135,6 +135,85 @@
     border-top: 1px solid #eee;
     flex-shrink: 0;
   }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: #fafafa;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+  }
+
+  .sidebar-header span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .new-note-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2eaadc;
+    font-size: 22px;
+    line-height: 1;
+    padding: 0;
+  }
+  .new-note-btn:hover { color: #1a90c0; }
+
+  .note-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .note-item {
+    display: flex;
+    align-items: center;
+    padding: 9px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 6px;
+  }
+  .note-item:hover { background: #f0f0ee; }
+  .note-item.active { background: #e8f4fc; }
+
+  .note-item-title {
+    flex: 1;
+    font-size: 13px;
+    color: #37352f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .note-item.active .note-item-title { font-weight: 600; }
+
+  .delete-note-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ccc;
+    font-size: 16px;
+    padding: 0 2px;
+    flex-shrink: 0;
+    opacity: 0;
+    line-height: 1;
+  }
+  .note-item:hover .delete-note-btn { opacity: 1; }
+  .delete-note-btn:hover { color: #e53e3e; }
 </style>
 </head>
 <body>
@@ -145,6 +224,13 @@
 </div>
 
 <div class="main">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span>Notes</span>
+      <button class="new-note-btn" onclick="newNote()" title="New note">+</button>
+    </div>
+    <div class="note-list" id="noteList"></div>
+  </div>
   <div class="editor-pane" id="editorPane">
     <div class="pane-label">Markdown</div>
     <textarea id="editor" placeholder="Start writing...&#10;&#10;Paste or drop images here (Ctrl+V / Cmd+V)&#10;Use markdown: **bold**, _italic_, ## headings"></textarea>
